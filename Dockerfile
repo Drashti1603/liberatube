@@ -1,7 +1,12 @@
-FROM node:14
-WORKDIR /app
-COPY package*.json ./
-RUN npm install
+FROM php:8.0-fpm
+WORKDIR /var/www/html
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        nginx \
+        libpng-dev \
+    && docker-php-ext-install pdo pdo_mysql gd \
+    && rm -rf /var/lib/apt/lists/*
 COPY . .
-EXPOSE 3000
-CMD ["npm", "start"]
+COPY nginx/default.conf /etc/nginx/sites-available/default
+EXPOSE 80
+CMD service php8.0-fpm start && nginx -g "daemon off;"
