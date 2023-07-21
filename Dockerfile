@@ -1,12 +1,17 @@
-# Use the official PHP image as the base image
-FROM php:latest
-# Copy the application files into the container
-COPY . /var/www/html
-# Install application dependencies
-#RUN composer install
-RUN docker-php-ext-install mysqli
-# Expose port 80 for HTTP
-EXPOSE 40
+# Use an official PHP image as the base image
+FROM my-php-app
 
-# Command to start the PHP server
-CMD ["php", "-S", "0.0.0.0:40", "-t", "/var/www/html"]
+# Set the working directory 
+WORKDIR /var/www/html
+
+# Copy the PHP application files
+COPY . /var/www/html
+
+# Install PHP extensions and other dependencies required by Liberatube
+
+RUN apt-get update && \
+    apt-get install -y libpng-dev && \
+    docker-php-ext-install pdo pdo_mysql gd mysqli
+
+# # Start the PHP built-in web server when the container starts
+CMD ["php", "-S", "0.0.0.0:80"]
