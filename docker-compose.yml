@@ -1,25 +1,28 @@
-version: '3.1'
+# This Docker Compose file will create two containers: one for Liberatube and one 
+# for MySQL. The Liberatube container will use the image that we created in the 
+# Dockerfile, and the MySQL container will use the official MySQL image. 
+# The two containers will be linked together so that the Liberatube container 
+# can access the MySQL database.
+version: '3.7'
+services:
+  liberatube:
+    image: my-php-app
+    build:
+      context: .
+      dockerfile: Dockerfile 
+    
+    depends_on:
+      - mysql
 
-# services:
-#   php:
-#     build:
-#       context: .
-#       dockerfile: Dockerfile
-#     ports:
-#       - 40:40
-#     volumes:
-#       - ./src:/usr/src/myapp
-
-
-#   db:
-#     image: mysql
-#     command: --default-authentication-plugin=mysql_native_password
-#     restart: always
-#     environment:
-#       # MYSQL_ROOT_PASSWORD: example
-#     volumes:
-#       - mysql-data:/var/lib/mysql
-
-
-# volumes:
-#   mysql-data:
+  mysql:
+    image: mysql:5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: users
+      MYSQL_ALLOW_EMPTY_PASSWORD:
+      MYSQL_PASSWORD: root
+    volumes:
+      - ./data:/var/lib/mysql
+    ports:
+      - 3306:3306
+    restart: always
